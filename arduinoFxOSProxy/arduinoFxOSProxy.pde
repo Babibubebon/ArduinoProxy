@@ -50,21 +50,27 @@ void draw() {
         println(buf);
         arduino.write(buf);
       }
-    }
-    // Receive response
-    String buf = null;
-    int start = millis();
-    do{
-      if(arduino.available() > 0) {
-        buf = arduino.readStringUntil('\r');
+      char cmd = buf.charAt(0);
+      if( cmd == 'd' || cmd == 'a' || cmd == 'p' || cmd == 'P'){
+        client.stop();
+        return;
       }
-    }while( (buf == null || buf.equals("\r")) && millis() - start < 1000);
     
-    print("Res: ");
-    println(buf);
-    if(client != null){
-      client.write(buf);
-      client.stop();
+      // Receive response
+      buf = null;
+      int start = millis();
+      do{
+        if(arduino.available() > 0) {
+          buf = arduino.readStringUntil('\r');
+        }
+      }while( (buf == null || buf.equals("\r")) && millis() - start < 1000);
+      
+      print("Res: ");
+      println(buf);
+      if(client != null){
+        client.write(buf);
+        client.stop();
+      }
     }
   }
 }
